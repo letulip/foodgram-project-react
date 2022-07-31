@@ -1,7 +1,9 @@
 from django.urls import include, path
 from rest_framework import routers
+from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .views import UsersViewSet
+from .views import UsersViewSet, UserKeyView, UserKeyDeleteView
 
 app_name = 'users'
 
@@ -12,16 +14,25 @@ router.register(
     basename='UsersViewSet'
 )
 
+
+# from django.views.decorators.csrf import csrf_exempt
+
 urlpatterns = [
     # path(
     #     'users/',
     #     # UsersAuthView todo
     #     name='register_user'
     # ),
-    # path(
-    #     'users/(?P<post_id>[0-9]+)/',
-    #     # UserView todo
-    #     name='user_view'
-    # ),
+    path(
+        'auth/token/login/',
+        UserKeyView.as_view(),
+        # TokenObtainPairView.as_view(),
+        name='get_token'
+    ),
+    path(
+        'auth/token/logout/',
+        UserKeyDeleteView.as_view(),
+        name='delete_token'
+    ),
     path('', include(router.urls)),
 ]
