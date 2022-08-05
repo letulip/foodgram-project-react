@@ -1,6 +1,5 @@
 from django.core.validators import RegexValidator
 from rest_framework.serializers import CharField, EmailField, ModelSerializer
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import User
 
@@ -57,26 +56,3 @@ class UserSelfSerializer(UsersSerializer):
         required=False,
         max_length=150
     )
-
-# from django.views.decorators.csrf import csrf_protect
-
-class UserKeySerializer(TokenObtainPairSerializer):
-    # class Meta():
-    #     fields = (
-    #         'email',
-    #         'password'
-    #     )
-    #     model = User
-    #     extra_kwargs = {'password': {'write_only': True}}
-    username_field = User.EMAIL_FIELD
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.fields[self.email_field] = CharField(required=True)
-    #     # self.fields['password'].required = False
-    #     self.fields[self.password_field] = CharField(required=True)
-
-    # @csrf_protect
-    def validate(self, attrs):
-        # attrs.update({'password': ''})
-        return super(UserKeySerializer, self).validate(attrs)

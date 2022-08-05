@@ -106,8 +106,8 @@ class IngredsAmount(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='recipe',
-        verbose_name='Recipe',
+        related_name='ingreds_list',
+        verbose_name='Recipe ingreds list',
     )
     amount = models.PositiveIntegerField(
         default=1,
