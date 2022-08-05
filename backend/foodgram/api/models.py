@@ -18,6 +18,9 @@ class Ingredient(models.Model):
 class Tag(models.Model):
     name = models.CharField(
         max_length=150,
+        verbose_name='tag name',
+        unique=True,
+        null=False,
     )
     color = models.CharField(
         max_length=9,
@@ -28,10 +31,17 @@ class Tag(models.Model):
                 digits."""
             )
         ],
+        default='#ffffff'
     )
     slug = models.SlugField(
         max_length=150,
+        verbose_name='tug slug',
+        unique=True,
     )
+
+    def __str__(self) -> str:
+        return self.name
+
 
 class Recipe(models.Model):
     author = models.ForeignKey(
