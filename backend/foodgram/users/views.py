@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-
+from api.permissions import IsAdminOrReadOnly
 from .models import User
 from .serializers import UsersSerializer, UserSelfSerializer
 from .pagination import CustomPagination
@@ -19,7 +19,7 @@ from .pagination import CustomPagination
 class UsersViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
-    # todo permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (SearchFilter,)
     pagination_class = CustomPagination
     search_fields = (
