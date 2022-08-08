@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import TagsViewSet, IngredientsViewSet, RecipesViewSet
+from .views import TagsViewSet, IngredientsViewSet, RecipesViewSet, FavoritesViewSet
 
 app_name = 'api'
 
@@ -20,6 +20,11 @@ router.register(
     r'recipes',
     RecipesViewSet,
     basename='RecipesViewSet'
+)
+router.register(
+    r'recipes/(?P<recipe_id>\d+)/favorites',
+    FavoritesViewSet,
+    basename='RecipeFavoritesViewSet'
 )
 
 urlpatterns = [

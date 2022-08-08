@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator
+from django.core.exceptions import NON_FIELD_ERRORS
 
 from users.models import User
 
@@ -119,4 +120,30 @@ class IngredsAmount(models.Model):
 
     def __str__(self) -> str:
         full_name = f'{self.ingedient} для рецепта {self.recipe}'
+        return full_name
+
+
+class Favorites(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+    )
+    add_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Favorites added date',
+    )
+
+    class Meta():
+        unique_together = [
+            ('user', 'recipe',)
+        ]
+
+    def __str__(self) -> str:
+        full_name = f'{self.recipe} добавлен в избранное {self.user}'
         return full_name

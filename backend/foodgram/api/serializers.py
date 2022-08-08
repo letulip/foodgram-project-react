@@ -1,6 +1,6 @@
-from reprlib import recursive_repr
 from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField, SlugRelatedField, SerializerMethodField, IntegerField
-from .models import Tag, Ingredient, Recipe, IngredsAmount
+from rest_framework.validators import UniqueTogetherValidator
+from .models import Tag, Ingredient, Recipe, IngredsAmount, Favorites
 from drf_extra_fields.fields import Base64ImageField
 from users.serializers import UserSelfSerializer
 from django.db.transaction import atomic
@@ -187,3 +187,31 @@ class RecipeEditSerializer(ModelSerializer):
         recipe.image = validated_data.pop('image')
         recipe.save()
         return recipe
+
+
+class FavoritesSerializer(ModelSerializer):
+    user = SlugRelatedField(
+        slug_field='username',
+        read_only=True,
+    )
+    recipe = SlugRelatedField(
+        slug_field='name',
+        read_only=True,
+    )
+
+    class Meta():
+        fields = (
+            'user',
+            'recipe',
+        )
+        model = Favorites
+        # validators = [
+        #     UniqueTogetherValidator(
+        #         fields=(
+        #             'user',
+        #             'recipe',
+        #         ),
+        #         queryset=Favorites.objects.all(),
+        #         message='Recipe already in favorites',
+        #     )
+        # ]
