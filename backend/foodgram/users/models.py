@@ -42,3 +42,25 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return self.username
+
+
+class Subscriptions(models.Model):
+    user = models.ForeignKey(
+        User,
+        related_name='following',
+        on_delete=models.CASCADE
+    )
+    author = models.ForeignKey(
+        User,
+        related_name='follower',
+        on_delete=models.CASCADE
+    )
+
+    class Meta():
+        unique_together = [
+            ('user', 'author',)
+        ]
+
+    def __str__(self) -> str:
+        full_name = f'{self.author} добавлен в подписки {self.user}'
+        return full_name

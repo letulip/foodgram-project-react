@@ -1,7 +1,7 @@
 from django.core.validators import RegexValidator
-from rest_framework.serializers import CharField, EmailField, ModelSerializer
+from rest_framework.serializers import CharField, EmailField, ModelSerializer, SlugRelatedField
 
-from .models import User
+from .models import User, Subscriptions
 
 
 class UsersSerializer(ModelSerializer):
@@ -56,3 +56,47 @@ class UserSelfSerializer(UsersSerializer):
         required=False,
         max_length=150
     )
+
+
+class SubscriptionsSerializer(ModelSerializer):
+    user = SlugRelatedField(
+        slug_field='id',
+        queryset=User.objects.all(),
+    )
+    author = SlugRelatedField(
+        slug_field='id',
+        queryset=User.objects.all(),
+        default=UserSelfSerializer(),
+    )
+
+    class Meta():
+        fields = (
+            'user',
+            'author',
+        )
+        model = Subscriptions
+
+
+class SubscriptionsListSerializer(ModelSerializer):
+    username = SlugRelatedField(
+        slug_field='id',
+        queryset=User.objects.all(),
+    )
+    author = SlugRelatedField(
+        slug_field='id',
+        queryset=User.objects.all(),
+        default=UserSelfSerializer(),
+    )
+
+    class Meta():
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count',
+        )
+        model = Subscriptions

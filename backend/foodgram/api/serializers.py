@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField, SlugRelatedField, SerializerMethodField, IntegerField
 from rest_framework.validators import UniqueTogetherValidator
 from .models import Tag, Ingredient, Recipe, IngredsAmount, Favorites
@@ -56,11 +57,16 @@ class IngredsAmountSerializer(ModelSerializer):
 
 
 class AddIngredAmountSerializer(ModelSerializer):
-    id = PrimaryKeyRelatedField(
-        source='ingredient',
-        queryset=Ingredient.objects.all(),
+    # id = PrimaryKeyRelatedField(
+    #     source='ingredient',
+    #     queryset=Ingredient.objects.all(),
+    # )
+    id = IntegerField(
+        write_only=True,
     )
-    amount = IntegerField()
+    amount = IntegerField(
+        write_only=True,
+    )
 
     class Meta():
         fields = (
@@ -152,8 +158,9 @@ class RecipeEditSerializer(ModelSerializer):
 
     def create_ingreds(self, recipe, ingredients):
         for item in ingredients:
+            ingredient = get_object_or_404(Ingredient, id=item['id'])
             IngredsAmount.objects.create(
-                ingredient=item['ingredient'],
+                ingredient=ingredient,
                 recipe=recipe,
                 amount=item['amount']
             )

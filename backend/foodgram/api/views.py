@@ -36,7 +36,6 @@ class FavoritesViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self, *args, **kwargs):
-        print(kwargs)
         recipe_id = self.kwargs.get('recipe_id')
         recipe = get_object_or_404(Recipe, pk=recipe_id)
         return recipe.favorites.all()
@@ -51,7 +50,7 @@ class FavoritesViewSet(ModelViewSet):
                 status=HTTP_400_BAD_REQUEST,
             )
         try:
-            serializer.save(user=self.request.user, recipe=recipe)
+            serializer.save(user=request.user, recipe=recipe)
         except IntegrityError:
             message = {
                 'unique_together': 'Recipe already in your favorites',
