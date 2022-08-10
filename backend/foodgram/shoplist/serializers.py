@@ -1,8 +1,16 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, SlugRelatedField
 from users.serializers import SubscriptionsRecipeSerializer
 from .models import ShopList
 
 class ShopListSerializer(ModelSerializer):
+    user = SlugRelatedField(
+        slug_field='username',
+        read_only=True,
+    )
+    recipe = SlugRelatedField(
+        slug_field='name',
+        read_only=True,
+    )
 
     class Meta():
         fields = (
