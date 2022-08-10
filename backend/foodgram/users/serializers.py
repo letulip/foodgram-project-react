@@ -1,7 +1,8 @@
 from django.core.validators import RegexValidator
-from rest_framework.serializers import CharField, EmailField, ModelSerializer, SlugRelatedField
+from rest_framework.serializers import CharField, EmailField, ModelSerializer, SlugRelatedField, SerializerMethodField
 
 from .models import User, Subscriptions
+from api.models import Recipe
 
 
 class UsersSerializer(ModelSerializer):
@@ -31,6 +32,9 @@ class UsersSerializer(ModelSerializer):
 
 
 class UserSelfSerializer(UsersSerializer):
+    is_subscribed = SerializerMethodField(
+        read_only=True,
+    )
     username = CharField(
         max_length=150,
         required=False,
@@ -57,36 +61,41 @@ class UserSelfSerializer(UsersSerializer):
         max_length=150
     )
 
-
-class SubscriptionsSerializer(ModelSerializer):
-    user = SlugRelatedField(
-        slug_field='id',
-        queryset=User.objects.all(),
-    )
-    author = SlugRelatedField(
-        slug_field='id',
-        queryset=User.objects.all(),
-        default=UserSelfSerializer(),
-    )
-
     class Meta():
         fields = (
-            'user',
-            'author',
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
         )
-        model = Subscriptions
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Subscriptions.objects.filter(
+            user=user,
+            author=obj.id
+        ).exists()
 
 
-class SubscriptionsListSerializer(ModelSerializer):
-    username = SlugRelatedField(
-        slug_field='id',
-        queryset=User.objects.all(),
-    )
-    author = SlugRelatedField(
-        slug_field='id',
-        queryset=User.objects.all(),
-        default=UserSelfSerializer(),
-    )
+class SubscriptionsRecipeSerializer(ModelSerializer):
+
+    class Meta():
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time'
+        )
+
+
+class SubscriptionsSerializer(UserSelfSerializer):
+    recipes = SerializerMethodField(read_only=True)
+    recipes_count = SerializerMethodField(read_only=True)
 
     class Meta():
         fields = (
@@ -99,4 +108,18 @@ class SubscriptionsListSerializer(ModelSerializer):
             'recipes',
             'recipes_count',
         )
-        model = Subscriptions
+        model = User
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        recipes = obj.recipes.all()
+        recipes_limit = request.query_params.get('recipes_limit')
+        if recipes_limit:
+            recipes = recipes[:int(recipes_limit)]
+        return SubscriptionsRecipeSerializer(
+            recipes,
+            many=True
+        ).data
+
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()

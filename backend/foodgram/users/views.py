@@ -1,6 +1,4 @@
-# from datetime import datetime
 from django.shortcuts import get_object_or_404
-from django.db import IntegrityError
 from django.http import HttpRequest
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
@@ -8,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from api.permissions import IsAdminOrReadOnly
@@ -102,50 +100,72 @@ class UserKeyDeleteView(APIView):
 
 
 class SubscriptionsViewSet(ModelViewSet):
-    queryset = Subscriptions.objects.all()
     serializer_class = SubscriptionsSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = CustomPagination
+
+    def get_queryset(self):
+        return User.objects.filter(follower__user=self.request.user)
 
 
 class SubscribeViewSet(ModelViewSet):
     serializer_class = SubscriptionsSerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = CustomPagination
 
     def get_queryset(self, *args, **kwargs):
         author_id = self.kwargs.get('author_id')
         author = get_object_or_404(User, pk=author_id)
-        return author.follower.all()
+        return author.following.all()
 
     def create(self, request, *args, **kwargs):
+        user = request.user
         author_id = self.kwargs.get('author_id')
         author = get_object_or_404(User, pk=author_id)
-        data = {
-            'user': request.user.id,
-            'author': author_id
-        }
+        if user == author:
+            return Response(
+                {
+                    'error': 'No self subscription'
+                },
+                status=HTTP_400_BAD_REQUEST
+            )
+        if Subscriptions.objects.filter(
+            user=user,
+            author_id=author_id
+        ).exists():
+            return Response(
+                {
+                    'error': 'You already subscribed to this user'
+                },
+                status=HTTP_400_BAD_REQUEST
+            )
+        Subscriptions.objects.create(
+            user=user,
+            author_id=author_id
+        )
         context = {
             'request': request
         }
-        serializer = self.get_serializer(data=data, context=context)
-        if not serializer.is_valid():
-            return Response(
-                data=serializer.errors,
-                status=HTTP_400_BAD_REQUEST,
-            )
-        try:
-            serializer.save(user=request.user, author=author)
-        except IntegrityError:
-            message = {
-                'unique_together': 'Author already in your subscriptions',
-            }
-            return Response(
-                data=message,
-                status=HTTP_400_BAD_REQUEST,
-            )
-        headers = self.get_success_headers(serializer.data)
+        serializer = self.serializer_class(author, context=context)
         return Response(
             serializer.data,
-            status=HTTP_200_OK,
-            headers=headers
+            status=HTTP_201_CREATED,
+        )
+
+    def delete(self, request, *args, **kwargs):
+        author_id = self.kwargs.get('author_id')
+        subscribed = Subscriptions.objects.filter(
+            user=request.user,
+            author_id=author_id
+        )
+        if subscribed:
+            subscribed.delete()
+            return Response(
+                status=HTTP_204_NO_CONTENT,
+            )
+        return Response(
+            {
+                'error': 'You were not subscribed to this user'
+            },
+            status=HTTP_400_BAD_REQUEST
         )
