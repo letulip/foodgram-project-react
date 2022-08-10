@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator
-from django.core.exceptions import NON_FIELD_ERRORS
 
 from users.models import User
 
@@ -61,7 +60,7 @@ class Recipe(models.Model):
         verbose_name='Recipe Name'
     )
     image = models.ImageField(
-        upload_to='recipes/',
+        upload_to='static/images/recipes/',
     )
     text = models.TextField(
         verbose_name='Recipe Description'
