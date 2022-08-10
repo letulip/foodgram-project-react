@@ -28,10 +28,5 @@ router.register(
 )
 
 urlpatterns = [
-    # path(
-    #     'auth/token/logout/',
-    #     UserKeyDeleteView.as_view(),
-    #     name='delete_token'
-    # ),
     path('', include(router.urls)),
 ]

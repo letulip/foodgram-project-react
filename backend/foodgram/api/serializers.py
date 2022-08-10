@@ -212,13 +212,3 @@ class FavoritesSerializer(ModelSerializer):
             'recipe',
         )
         model = Favorites
-        # validators = [
-        #     UniqueTogetherValidator(
-        #         fields=(
-        #             'user',
-        #             'recipe',
-        #         ),
-        #         queryset=Favorites.objects.all(),
-        #         message='Recipe already in favorites',
-        #     )
-        # ]
