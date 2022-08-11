@@ -1,13 +1,20 @@
-from django.shortcuts import get_object_or_404
-from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField, SlugRelatedField, SerializerMethodField, IntegerField
-from rest_framework.validators import UniqueTogetherValidator
-from .models import Tag, Ingredient, Recipe, IngredsAmount, Favorites
-from drf_extra_fields.fields import Base64ImageField
-from users.serializers import UserSelfSerializer
 from django.db.transaction import atomic
+from django.shortcuts import get_object_or_404
+from drf_extra_fields.fields import Base64ImageField
+from rest_framework.serializers import (IntegerField, ModelSerializer,
+                                        PrimaryKeyRelatedField,
+                                        SerializerMethodField,
+                                        SlugRelatedField)
+
+from users.serializers import UserSelfSerializer
+
+from .models import Favorites, Ingredient, IngredsAmount, Recipe, Tag
 
 
 class TagSerializer(ModelSerializer):
+    """
+    Сериализатор отображения тегов.
+    """
 
     class Meta():
         fields = (
@@ -20,6 +27,9 @@ class TagSerializer(ModelSerializer):
 
 
 class IngredientsSerializer(ModelSerializer):
+    """
+    Сериализатор отображения ингредиентов.
+    """
 
     class Meta():
         fields = (
@@ -31,6 +41,10 @@ class IngredientsSerializer(ModelSerializer):
 
 
 class IngredsAmountSerializer(ModelSerializer):
+    """
+    Сериализатор отображения ингредиентов с количеством.
+    """
+
     id = PrimaryKeyRelatedField(
         source='ingredient',
         read_only=True,
@@ -57,10 +71,10 @@ class IngredsAmountSerializer(ModelSerializer):
 
 
 class AddIngredAmountSerializer(ModelSerializer):
-    # id = PrimaryKeyRelatedField(
-    #     source='ingredient',
-    #     queryset=Ingredient.objects.all(),
-    # )
+    """
+    Сериализатор добавления ингредиента с количеством.
+    """
+
     id = IntegerField(
         write_only=True,
     )
@@ -77,6 +91,10 @@ class AddIngredAmountSerializer(ModelSerializer):
 
 
 class RecipesSerializer(ModelSerializer):
+    """
+    Сериализатор отображения рецепта.
+    """
+
     author = SlugRelatedField(
         slug_field='username',
         read_only=True,
@@ -110,6 +128,10 @@ class RecipesSerializer(ModelSerializer):
 
 
 class RecipeEditSerializer(ModelSerializer):
+    """
+    Сериализатор редактирования рецепта.
+    """
+
     image = Base64ImageField(
         use_url=True,
     )
@@ -179,6 +201,10 @@ class RecipeEditSerializer(ModelSerializer):
 
 
 class FavoritesSerializer(ModelSerializer):
+    """
+    Сериализатор отображения избранного.
+    """
+
     user = SlugRelatedField(
         slug_field='username',
         read_only=True,

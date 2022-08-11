@@ -1,8 +1,15 @@
 import json
+
 from django.core.management.base import BaseCommand
+
 from api.models import Ingredient
 
+
 class Command(BaseCommand):
+    """
+    Кастомная команда для заполнения базы данными ингредиентами.
+    """
+
     help = 'Import Ingredients'
 
     def handle(self, *args, **options):

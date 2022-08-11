@@ -1,11 +1,16 @@
 from django.core.validators import RegexValidator
-from rest_framework.serializers import CharField, EmailField, ModelSerializer, SlugRelatedField, SerializerMethodField
+from rest_framework.serializers import (CharField, EmailField, ModelSerializer,
+                                        SerializerMethodField)
 
-from .models import User, Subscriptions
 from api.models import Recipe
+
+from .models import Subscriptions, User
 
 
 class UsersSerializer(ModelSerializer):
+    """
+    Общий сериализатор пользователей.
+    """
 
     class Meta():
         fields = (
@@ -32,6 +37,10 @@ class UsersSerializer(ModelSerializer):
 
 
 class UserSelfSerializer(UsersSerializer):
+    """
+    Сериализатор просмотра личной страницы пользователя.
+    """
+
     is_subscribed = SerializerMethodField(
         read_only=True,
     )
@@ -82,6 +91,9 @@ class UserSelfSerializer(UsersSerializer):
 
 
 class SubscriptionsRecipeSerializer(ModelSerializer):
+    """
+    Сериализатор отображения рецептов в подписках.
+    """
 
     class Meta():
         model = Recipe
@@ -94,6 +106,10 @@ class SubscriptionsRecipeSerializer(ModelSerializer):
 
 
 class SubscriptionsSerializer(UserSelfSerializer):
+    """
+    Сериализатор отображения подписок.
+    """
+
     recipes = SerializerMethodField(read_only=True)
     recipes_count = SerializerMethodField(read_only=True)
 

@@ -1,26 +1,46 @@
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
-from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
-from .models import Tag, Ingredient, Recipe, Favorites
-from .serializers import TagSerializer, IngredientsSerializer, RecipesSerializer, RecipeEditSerializer, FavoritesSerializer
+from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
+                                   HTTP_400_BAD_REQUEST)
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+
+from .models import Favorites, Ingredient, Recipe, Tag
 from .pagination import PageNumberPagination
 from .permissions import IsOwnerOrReadOnly
+from .serializers import (FavoritesSerializer, IngredientsSerializer,
+                          RecipeEditSerializer, RecipesSerializer,
+                          TagSerializer)
 
 
 class TagsViewSet(ReadOnlyModelViewSet):
+    """
+    Отображение списка тегов.
+    Доступно всем пользователям.
+    """
+
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
 class IngredientsViewSet(ReadOnlyModelViewSet):
+    """
+    Отображение списка ингредиентов.
+    Доступно всем пользователям.
+    """
+
     queryset = Ingredient.objects.all()
     serializer_class = IngredientsSerializer
 
 
 class RecipesViewSet(ModelViewSet):
+    """
+    Отображение рецепта.
+    Просмотр доступен всем пользователям.
+    Редактирование доступно только автору рецепта.
+    """
+
     queryset = Recipe.objects.all()
     permission_classes = (IsOwnerOrReadOnly,)
     pagination_class = PageNumberPagination
@@ -32,6 +52,11 @@ class RecipesViewSet(ModelViewSet):
 
 
 class FavoritesViewSet(ModelViewSet):
+    """
+    Отображение и редактирование избранных рецептов.
+    Доступно только аутентифицированным пользователям.
+    """
+
     serializer_class = FavoritesSerializer
     permission_classes = (IsAuthenticated,)
 

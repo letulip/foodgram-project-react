@@ -1,21 +1,32 @@
-from django.shortcuts import get_object_or_404
 from django.http import HttpRequest
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.authtoken.models import Token
+from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
+                                   HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST,
+                                   HTTP_401_UNAUTHORIZED)
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
+
 from api.permissions import IsAdminOrReadOnly
-from .models import User, Subscriptions
-from .serializers import UsersSerializer, UserSelfSerializer, SubscriptionsSerializer
+
+from .models import Subscriptions, User
 from .pagination import CustomPagination
+from .serializers import (SubscriptionsSerializer, UserSelfSerializer,
+                          UsersSerializer)
 
 
 class UsersViewSet(ModelViewSet):
+    """
+    Отображение списка пользователей.
+    Просмотр доступен всем пользователям.
+    Редактирование доступно Администратору.
+    """
+
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -25,7 +36,6 @@ class UsersViewSet(ModelViewSet):
         '^username',
         '$username'
     )
-    # lookup_field = 'username'
 
     @action(
         methods=['get'],
@@ -65,6 +75,10 @@ class UsersViewSet(ModelViewSet):
 
 
 class UserKeyView(ObtainAuthToken):
+    """
+    Получение ключа аутентификации - логин.
+    Доступно всем пользователям.
+    """
 
     def post(self, request: HttpRequest):
         if not request.data or 'email' not in request.data:
@@ -86,6 +100,11 @@ class UserKeyView(ObtainAuthToken):
 
 
 class UserKeyDeleteView(APIView):
+    """
+    Удаление ключа аутентификации - логаут.
+    Доступно только авторизованным пользователям.
+    """
+
     permission_classes = (IsAuthenticated,)
 
     def post(self, request: HttpRequest):
@@ -100,6 +119,11 @@ class UserKeyDeleteView(APIView):
 
 
 class SubscriptionsViewSet(ModelViewSet):
+    """
+    Отображение списка подписок пользователя.
+    Доступно только авторизованным пользователям.
+    """
+
     serializer_class = SubscriptionsSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = CustomPagination
@@ -109,6 +133,11 @@ class SubscriptionsViewSet(ModelViewSet):
 
 
 class SubscribeViewSet(ModelViewSet):
+    """
+    Создание и удаление подписки на автора.
+    Доступно только авторизованным пользователям.
+    """
+    
     serializer_class = SubscriptionsSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = CustomPagination

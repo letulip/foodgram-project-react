@@ -1,7 +1,8 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import UsersViewSet, UserKeyView, UserKeyDeleteView, SubscriptionsViewSet, SubscribeViewSet
+from .views import (SubscribeViewSet, SubscriptionsViewSet, UserKeyDeleteView,
+                    UserKeyView, UsersViewSet)
 
 app_name = 'users'
 

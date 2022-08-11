@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import ShopListViewSet, DownloadShopListView
+from .views import DownloadShopListView, ShopListViewSet
 
 app_name = 'shoplist'
 

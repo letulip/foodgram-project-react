@@ -1,10 +1,13 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.validators import RegexValidator
-from django.contrib.auth.models import UserManager
 from django.db import models
 
 
 class User(AbstractUser):
+    """
+    Модель пользователя.
+    """
+
     username = models.CharField(
         max_length=150,
         unique=True,
@@ -45,6 +48,10 @@ class User(AbstractUser):
 
 
 class Subscriptions(models.Model):
+    """
+    Модель подписок.
+    """
+
     user = models.ForeignKey(
         User,
         related_name='following',

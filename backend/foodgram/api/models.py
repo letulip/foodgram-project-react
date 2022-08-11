@@ -1,10 +1,14 @@
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
-from django.core.validators import RegexValidator, MinValueValidator
 
 from users.models import User
 
 
 class Ingredient(models.Model):
+    """
+    Основная модель объекта ингредиента.
+    """
+
     name = models.CharField(
         max_length=150,
         verbose_name='ingredient name'
@@ -20,6 +24,10 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
+    """
+    Модель объекта тега.
+    """
+
     name = models.CharField(
         max_length=150,
         verbose_name='tag name',
@@ -48,6 +56,10 @@ class Tag(models.Model):
 
 
 class Recipe(models.Model):
+    """
+    Модель объекта рецепта.
+    """
+
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -97,6 +109,10 @@ class Recipe(models.Model):
 
 
 class IngredsAmount(models.Model):
+    """
+    Модель объекта ингредиента с количеством.
+    """
+
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
@@ -123,6 +139,10 @@ class IngredsAmount(models.Model):
 
 
 class Favorites(models.Model):
+    """
+    Модель объекта избранного.
+    """
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

@@ -1,6 +1,7 @@
 from django.db import models
-from users.models import User
+
 from api.models import Recipe
+from users.models import User
 
 
 class ShopList(models.Model):

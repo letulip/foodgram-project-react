@@ -4,6 +4,9 @@ from .models import User
 
 
 class CustomUserCreationForm(UserCreationForm):
+    """
+    Форма создания нового пользователя.
+    """
 
     class Meta():
         model = User
@@ -11,6 +14,9 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class CustomUserChangeForm(UserChangeForm):
+    """
+    Форма смены пароля пользователя.
+    """
 
     class Meta():
         model = User
