@@ -2,8 +2,11 @@ from django.db import models
 from users.models import User
 from api.models import Recipe
 
-# Create your models here.
+
 class ShopList(models.Model):
+    """
+    Модель списка покупок.
+    """
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

@@ -1,15 +1,21 @@
 from django.db import IntegrityError
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+from rest_framework.views import APIView
 from .serializers import ShopListSerializer
 from .models import ShopList
-from api.models import Recipe
+from api.models import Recipe, IngredsAmount
 
 
 class ShopListViewSet(ModelViewSet):
+    """
+    Создание и удаление ингредиентов списка покупок.
+    Доступно только авторизованным пользователям.
+    """
     queryset = ShopList.objects.all()
     serializer_class = ShopListSerializer
     permission_classes = (IsAuthenticated,)
@@ -51,3 +57,37 @@ class ShopListViewSet(ModelViewSet):
         return Response(
             status=HTTP_204_NO_CONTENT,
         )
+
+
+class DownloadShopListView(APIView):
+    """
+    Скачивание списка покупок.
+    Доступно только авторизованным пользователям.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        shop_list = {}
+        ingredients = IngredsAmount.objects.filter(
+            recipe__ingreds_to_buy__user=request.user
+        )
+        for item in ingredients:
+            amount = item.amount
+            name = item.ingredient.name
+            unit = item.ingredient.measurement_unit
+            if name not in shop_list:
+                shop_list[name] = {
+                    'amount': amount,
+                    'unit': unit,
+                }
+            else:
+                shop_list[name]['amount'] += amount
+        out_string = 'Ваш список покупок:\n'
+        for name, item in shop_list.items():
+            out_string += f'- {name}: {item["amount"]} {item["unit"]}\n'
+        response = HttpResponse(
+            out_string,
+            'Content-Type: text/plain',
+        )
+        response['Content-Disposition'] = 'attachment; filename="shoplist.txt"'
+        return response
