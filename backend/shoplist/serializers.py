@@ -1,5 +1,4 @@
 from rest_framework.serializers import ModelSerializer, SlugRelatedField
-
 from users.serializers import SubscriptionsRecipeSerializer
 
 from .models import ShopList

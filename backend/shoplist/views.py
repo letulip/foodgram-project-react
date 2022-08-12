@@ -1,3 +1,4 @@
+from api.models import IngredsAmount, Recipe
 from django.db import IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -7,8 +8,6 @@ from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
                                    HTTP_400_BAD_REQUEST)
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-
-from api.models import IngredsAmount, Recipe
 
 from .models import ShopList
 from .serializers import ShopListSerializer

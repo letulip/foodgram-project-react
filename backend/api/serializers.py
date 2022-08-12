@@ -5,7 +5,7 @@ from rest_framework.serializers import (IntegerField, ModelSerializer,
                                         PrimaryKeyRelatedField,
                                         SerializerMethodField,
                                         SlugRelatedField)
-
+from shoplist.models import ShopList
 from users.serializers import UserSelfSerializer
 
 from .models import Favorites, Ingredient, IngredsAmount, Recipe, Tag
@@ -104,6 +104,12 @@ class RecipesSerializer(ModelSerializer):
         many=True,
         read_only=True,
     )
+    is_in_shop_list = SerializerMethodField(
+        read_only=True,
+    )
+    is_favorite = SerializerMethodField(
+        read_only=True,
+    )
 
     class Meta():
         fields = (
@@ -125,6 +131,24 @@ class RecipesSerializer(ModelSerializer):
             queryset,
             many=True,
         ).data
+
+    def is_in_shop_list(self, obj):
+        user = self.context.get('request').user
+        if not user.is_anonymous:
+            return False
+        return ShopList.objects.filter(
+            user=user,
+            recipe=obj,
+        ).exists()
+
+    def is_favorite(self, obj):
+        user = self.context.get('request').user
+        if not user.is_anonymous:
+            return False
+        return Favorites.objects.filter(
+            user=user,
+            recipe=obj,
+        ).exists()
 
 
 class RecipeEditSerializer(ModelSerializer):
