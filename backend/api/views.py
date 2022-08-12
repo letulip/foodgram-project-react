@@ -1,13 +1,15 @@
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
                                    HTTP_400_BAD_REQUEST)
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
+from .filters import IngredsFilter, RecipesFilter
 from .models import Favorites, Ingredient, Recipe, Tag
-from .pagination import PageNumberPagination
+from .pagination import CustomPagination
 from .permissions import IsOwnerOrReadOnly
 from .serializers import (FavoritesSerializer, IngredientsSerializer,
                           RecipeEditSerializer, RecipesSerializer,
@@ -32,6 +34,8 @@ class IngredientsViewSet(ReadOnlyModelViewSet):
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientsSerializer
+    filter_backends = (IngredsFilter,)
+    search_fields = ('^name',)
 
 
 class RecipesViewSet(ModelViewSet):
@@ -43,7 +47,10 @@ class RecipesViewSet(ModelViewSet):
 
     queryset = Recipe.objects.all()
     permission_classes = (IsOwnerOrReadOnly,)
-    pagination_class = PageNumberPagination
+    pagination_class = CustomPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipesFilter
+
 
     def get_serializer_class(self):
         if self.request.method not in ('POST', 'PATCH'):

@@ -11,7 +11,7 @@ class ShopList(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='shopping_list',
+        related_name='shop_list',
         verbose_name='Shopping List',
     )
     recipe = models.ForeignKey(

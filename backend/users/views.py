@@ -12,8 +12,6 @@ from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from api.permissions import IsAdminOrReadOnly
-
 from .models import Subscriptions, User
 from .pagination import CustomPagination
 from .serializers import (SubscriptionsSerializer, UserSelfSerializer,
@@ -29,7 +27,6 @@ class UsersViewSet(ModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = UsersSerializer
-    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (SearchFilter,)
     pagination_class = CustomPagination
     search_fields = (
@@ -53,7 +50,6 @@ class UsersViewSet(ModelViewSet):
     @action(
         methods=['post'],
         detail=False,
-        permission_classes=(IsAuthenticated,),
         url_path='set_password',
     )
     def post(self, request: HttpRequest):
