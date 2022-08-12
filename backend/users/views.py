@@ -84,6 +84,9 @@ class UserKeyView(ObtainAuthToken):
         user = get_object_or_404(User, email=email)
         password = request.data['password']
         if user.check_password(password):
+            existing_token = Token.objects.filter(user=user)
+            if existing_token:
+                existing_token.delete()
             auth_token = Token.objects.create(user=user)
             token = {
                 'auth_token': auth_token.key
