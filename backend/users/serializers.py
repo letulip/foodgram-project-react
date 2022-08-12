@@ -63,7 +63,6 @@ class UserSelfSerializer(UsersSerializer):
         required=False,
         max_length=254
     )
-    # role = CharField(read_only=True)
     password = CharField(
         required=False,
         max_length=150
@@ -77,7 +76,9 @@ class UserSelfSerializer(UsersSerializer):
             'first_name',
             'last_name',
             'is_subscribed',
+            'password'
         )
+        model = User
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
