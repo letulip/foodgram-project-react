@@ -18,11 +18,17 @@ class ShopListViewSet(ModelViewSet):
     Создание и удаление ингредиентов списка покупок.
     Доступно только авторизованным пользователям.
     """
-    queryset = ShopList.objects.all()
+
     serializer_class = ShopListSerializer
     permission_classes = (IsAuthenticated,)
 
+    def get_queryset(self):
+        user = self.request.user
+        return user.shop_list.all()
+
     def create(self, request, *args, **kwargs):
+        user = request.user
+        print(user)
         recipe_id = self.kwargs.get('recipe_id')
         recipe = get_object_or_404(Recipe, pk=recipe_id)
         print(request)
@@ -66,6 +72,7 @@ class DownloadShopListView(APIView):
     Скачивание списка покупок.
     Доступно только авторизованным пользователям.
     """
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):

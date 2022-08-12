@@ -51,7 +51,6 @@ class RecipesViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipesFilter
 
-
     def get_serializer_class(self):
         if self.request.method not in ('POST', 'PATCH'):
             return RecipesSerializer
