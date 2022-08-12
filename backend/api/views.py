@@ -68,9 +68,8 @@ class FavoritesViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self, *args, **kwargs):
-        recipe_id = self.kwargs.get('recipe_id')
-        recipe = get_object_or_404(Recipe, pk=recipe_id)
-        return recipe.favorites.all()
+        user = self.request.user
+        return user.favorites.all()
 
     def create(self, request, *args, **kwargs):
         recipe_id = self.kwargs.get('recipe_id')

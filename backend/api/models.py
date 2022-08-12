@@ -42,11 +42,12 @@ class Tag(models.Model):
                 digits."""
             )
         ],
+        unique=True,
         default='#ffffff'
     )
     slug = models.SlugField(
         max_length=150,
-        verbose_name='tug slug',
+        verbose_name='tag slug',
         unique=True,
     )
 

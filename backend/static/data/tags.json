@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "name": "Завтрак",
+    "color": "#E26C2D",
+    "slug": "breakfast"
+  },
+  {
+    "id": 2,
+    "name": "Второй завтрак",
+    "color": "#BADA55",
+    "slug": "branch"
+  },
+  {
+    "id": 3,
+    "name": "Обед",
+    "color": "#FFB300",
+    "slug": "lunch"
+  },
+  {
+    "id": 4,
+    "name": "Полдник",
+    "color": "#00B3FF",
+    "slug": "afternoon"
+  },
+  {
+    "id": 5,
+    "name": "Ужин",
+    "color": "#AA00FF",
+    "slug": "dinner"
+  },
+  {
+    "id": 6,
+    "name": "Поздний ужин",
+    "color": "#008514",
+    "slug": "late_dinner"
+  },
+  {
+    "id": 7,
+    "name": "Чай",
+    "color": "#855600",
+    "slug": "tea"
+  }
+]

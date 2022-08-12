@@ -4,7 +4,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework.serializers import (IntegerField, ModelSerializer,
                                         PrimaryKeyRelatedField,
                                         SerializerMethodField,
-                                        SlugRelatedField)
+                                        SlugRelatedField, ValidationError)
 from shoplist.models import ShopList
 from users.serializers import UserSelfSerializer
 
@@ -24,6 +24,11 @@ class TagSerializer(ModelSerializer):
         )
         model = Tag
         lookup_field = 'id'
+        extra_kwargs = {
+            'url': {
+                'lookup_field': 'id'
+            }
+        }
 
 
 class IngredientsSerializer(ModelSerializer):
@@ -107,7 +112,7 @@ class RecipesSerializer(ModelSerializer):
     is_in_shop_list = SerializerMethodField(
         read_only=True,
     )
-    is_favorite = SerializerMethodField(
+    is_favorited = SerializerMethodField(
         read_only=True,
     )
 
@@ -121,6 +126,8 @@ class RecipesSerializer(ModelSerializer):
             'text',
             'cooking_time',
             'tags',
+            'is_favorited',
+            'is_in_shop_list',
         )
         model = Recipe
 
@@ -132,23 +139,23 @@ class RecipesSerializer(ModelSerializer):
             many=True,
         ).data
 
-    def is_in_shop_list(self, obj):
+    def get_is_in_shop_list(self, obj):
         user = self.context.get('request').user
         if not user.is_anonymous:
-            return False
-        return ShopList.objects.filter(
-            user=user,
-            recipe=obj,
-        ).exists()
+            return ShopList.objects.filter(
+                user=user,
+                recipe=obj,
+            ).exists()
+        return False
 
-    def is_favorite(self, obj):
+    def get_is_favorited(self, obj):
         user = self.context.get('request').user
         if not user.is_anonymous:
-            return False
-        return Favorites.objects.filter(
-            user=user,
-            recipe=obj,
-        ).exists()
+            return Favorites.objects.filter(
+                user=user,
+                recipe=obj,
+            ).exists()
+        return False
 
 
 class RecipeEditSerializer(ModelSerializer):
@@ -199,6 +206,10 @@ class RecipeEditSerializer(ModelSerializer):
         user = self.context.get('request').user
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
+        if not tags:
+            raise ValidationError({
+                'tags': 'At least 1 tag is required'
+            })
         recipe = Recipe.objects.create(
             author=user,
             **validated_data
@@ -210,7 +221,6 @@ class RecipeEditSerializer(ModelSerializer):
 
     @atomic
     def update(self, recipe, validated_data):
-        print(validated_data)
         IngredsAmount.objects.filter(recipe=recipe).delete()
         ingredients = validated_data.pop('ingredients')
         self.create_ingreds(recipe, ingredients)
