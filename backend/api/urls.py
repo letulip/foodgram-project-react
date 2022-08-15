@@ -8,7 +8,7 @@ app_name = 'api'
 
 router = routers.DefaultRouter()
 router.register(
-    r'tags',
+    'tags',
     TagsViewSet,
     basename='TagsViewSet'
 )

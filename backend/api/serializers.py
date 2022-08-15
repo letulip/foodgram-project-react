@@ -101,8 +101,7 @@ class RecipesSerializer(ModelSerializer):
     Сериализатор отображения рецепта.
     """
 
-    author = SlugRelatedField(
-        slug_field='username',
+    author = UserSelfSerializer(
         read_only=True,
     )
     ingredients = IngredientsAmountSerializer(
