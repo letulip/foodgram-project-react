@@ -74,11 +74,7 @@ class FavoriteViewSet(ModelViewSet):
         recipe_id = self.kwargs.get('recipe_id')
         recipe = get_object_or_404(Recipe, pk=recipe_id)
         serializer = self.get_serializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(
-                data=serializer.errors,
-                status=HTTP_400_BAD_REQUEST,
-            )
+        serializer.is_valid(raise_exception=True)
         try:
             serializer.save(user=request.user, recipe=recipe)
         except IntegrityError:
