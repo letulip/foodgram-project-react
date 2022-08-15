@@ -104,7 +104,11 @@ class RecipesSerializer(ModelSerializer):
         slug_field='username',
         read_only=True,
     )
-    ingredients = SerializerMethodField()
+    ingredients = IngredientsAmountSerializer(
+        many=True,
+        source='ingreds_list',
+        read_only=True,
+    )
     tags = TagSerializer(
         many=True,
         read_only=True,
@@ -130,14 +134,6 @@ class RecipesSerializer(ModelSerializer):
             'is_in_shop_list',
         )
         model = Recipe
-
-    def get_ingredients(self, obj):
-        recipe = obj
-        queryset = recipe.ingreds_list.all()
-        return IngredientsAmountSerializer(
-            queryset,
-            many=True,
-        ).data
 
     def get_is_in_shop_list(self, obj):
         user = self.context.get('request').user
@@ -192,13 +188,47 @@ class RecipeEditSerializer(ModelSerializer):
         model = Recipe
 
     def create_ingreds(self, recipe, ingredients):
-        for item in ingredients:
-            ingredient = get_object_or_404(Ingredient, id=item['id'])
-            IngredientsAmount.objects.create(
-                ingredient=ingredient,
+        objs = [
+            IngredientsAmount(
+                ingredient=get_object_or_404(Ingredient, id=item['id']),
                 recipe=recipe,
                 amount=item['amount']
             )
+            for item in ingredients
+        ]
+        IngredientsAmount.objects.bulk_create(objs)
+
+    def validate(self, data):
+        ingreds_list = []
+        for item in data['ingredients']:
+            if item['id'] in ingreds_list:
+                raise ValidationError({
+                    'ingredients': 'Ingredients should be unique'
+                })
+            ingreds_list.append(item['id'])
+            if int(item['amount']) <= 0:
+                raise ValidationError({
+                    'amount': 'Ingredients amount should be positive'
+                })
+
+        tags = data['tags']
+        if not tags:
+            raise ValidationError({
+                'tags': 'At least 1 tag is required'
+            })
+        tags_list = []
+        for tag in tags:
+            if tag in tags_list:
+                raise ValidationError({
+                    'tags': 'Tag should be unique'
+                })
+            tags_list.append(tag)
+
+        if int(data['cooking_time']) <= 0:
+            raise ValidationError({
+                'cooking_time': 'Cooking time should be positive'
+            })
+        return data
 
     # use atomic to roll back db transaction due to error
     @atomic
@@ -206,17 +236,12 @@ class RecipeEditSerializer(ModelSerializer):
         user = self.context.get('request').user
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
-        if not tags:
-            raise ValidationError({
-                'tags': 'At least 1 tag is required'
-            })
         recipe = Recipe.objects.create(
             author=user,
             **validated_data
         )
         self.create_ingreds(recipe, ingredients)
         recipe.tags.set(tags)
-        recipe.save()
         return recipe
 
     @atomic
@@ -226,11 +251,7 @@ class RecipeEditSerializer(ModelSerializer):
         self.create_ingreds(recipe, ingredients)
         tags = validated_data.pop('tags')
         recipe.tags.set(tags)
-        recipe.name = validated_data.pop('name')
-        recipe.text = validated_data.pop('text')
-        recipe.cooking_time = validated_data.pop('cooking_time')
-        recipe.image = validated_data.pop('image')
-        recipe.save()
+        Recipe.objects.filter(id=recipe.id).update(**validated_data)
         return recipe
 
 

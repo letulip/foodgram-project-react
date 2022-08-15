@@ -14,7 +14,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         file = json.load(open('../../data/ingredients.json'))
-        count = 0
+        count = 1
 
         for row in file:
             Ingredient.objects.create(

@@ -160,8 +160,14 @@ class Favorite(models.Model):
     )
 
     class Meta:
-        unique_together = [
-            ('user', 'recipe',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    'user',
+                    'recipe'
+                ],
+                name='unique_recipe_per_user',
+            )
         ]
 
     def __str__(self) -> str:
