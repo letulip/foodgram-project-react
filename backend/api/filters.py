@@ -41,4 +41,4 @@ class RecipesFilter(FilterSet):
     def get_is_favorited(self, queryset, name, value):
         if not value:
             return Recipe.objects.all()
-        return queryset.filter(Favorite__user=self.request.user)
+        return queryset.filter(favorites__user=self.request.user)
