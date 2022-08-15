@@ -1,6 +1,6 @@
 from django.core.validators import RegexValidator
 from rest_framework.serializers import (CharField, EmailField, ModelSerializer,
-                                        SerializerMethodField)
+                                        Serializer, SerializerMethodField)
 
 from api.models import Recipe
 
@@ -34,6 +34,13 @@ class UsersSerializer(ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class PasswordChangeSerializer(Serializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['new_password'] = CharField(required=True)
+        self.fields['current_password'] = CharField(required=True)
 
 
 class UserSelfSerializer(UsersSerializer):
