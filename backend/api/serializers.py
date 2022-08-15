@@ -19,6 +19,7 @@ class TagSerializer(ModelSerializer):
 
     class Meta:
         fields = (
+            'id',
             'name',
             'color',
             'slug',
