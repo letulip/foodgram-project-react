@@ -1,14 +1,9 @@
 import os
-from datetime import timedelta
 from pathlib import Path
-
-import django
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 DJANGO_SETTINGS_MODULE = os.getenv('DJANGO_SETTINGS_MODULE', __file__)
-# os.environ.setdefault('DJANGO_SETTINGS_MODULE', __file__)
-# os.environ['DJANGO_SETTINGS_MODULE'] = 'foodgram.settings'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -36,7 +31,6 @@ INSTALLED_APPS = [
     'django_filters',
     'users',
     'api',
-    'shoplist'
 ]
 
 MIDDLEWARE = [
@@ -146,15 +140,8 @@ REST_FRAMEWORK = {
     ],
 }
 
-SIMPLE_JWT = {
-    # Устанавливаем срок жизни токена
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=100),
-    'AUTH_HEADER_TYPES': ('Bearer',),
-}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# django.setup()

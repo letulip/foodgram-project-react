@@ -1,7 +1,8 @@
-from api.models import Recipe
 from django.core.validators import RegexValidator
 from rest_framework.serializers import (CharField, EmailField, ModelSerializer,
                                         SerializerMethodField)
+
+from api.models import Recipe
 
 from .models import Subscription, User
 

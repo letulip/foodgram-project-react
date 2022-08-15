@@ -64,8 +64,14 @@ class Subscription(models.Model):
     )
 
     class Meta:
-        unique_together = [
-            ('user', 'author',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    'user',
+                    'author'
+                ],
+                name='unique_subscription_per_author',
+            )
         ]
 
     def __str__(self) -> str:

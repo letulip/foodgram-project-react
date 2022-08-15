@@ -59,8 +59,8 @@ class UsersViewSet(ModelViewSet):
                 user,
                 data=user.__dict__
             )
-            if serializer.is_valid():
-                serializer.save()
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
             return Response(status=HTTP_204_NO_CONTENT)
         data = {
             'password': 'wrong password',
@@ -134,7 +134,7 @@ class SubscribeViewSet(ModelViewSet):
     Создание и удаление подписки на автора.
     Доступно только авторизованным пользователям.
     """
-    
+
     serializer_class = SubscriptionSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = CustomPagination

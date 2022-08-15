@@ -8,7 +8,7 @@ app_name = 'users'
 
 router = routers.DefaultRouter()
 router.register(
-    r'users/Subscription',
+    r'users/subscriptions',
     SubscriptionViewSet,
     basename='SubscriptionViewSet'
 )

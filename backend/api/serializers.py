@@ -5,10 +5,11 @@ from rest_framework.serializers import (IntegerField, ModelSerializer,
                                         PrimaryKeyRelatedField,
                                         SerializerMethodField,
                                         SlugRelatedField, ValidationError)
-from shoplist.models import ShopList
-from users.serializers import UserSelfSerializer
 
-from .models import Favorite, Ingredient, IngredientsAmount, Recipe, Tag
+from users.serializers import SubscriptionRecipeSerializer, UserSelfSerializer
+
+from .models import (Favorite, Ingredient, IngredientsAmount, Recipe, ShopList,
+                     Tag)
 
 
 class TagSerializer(ModelSerializer):
@@ -275,3 +276,33 @@ class FavoriteSerializer(ModelSerializer):
             'recipe',
         )
         model = Favorite
+
+
+class ShopListSerializer(ModelSerializer):
+    """
+    Сериализатор для работы со списком покупок.
+    """
+    user = SlugRelatedField(
+        slug_field='username',
+        read_only=True,
+    )
+    recipe = SlugRelatedField(
+        slug_field='name',
+        read_only=True,
+    )
+
+    class Meta:
+        fields = (
+            'user',
+            'recipe',
+        )
+        model = ShopList
+
+    def to_representation(self, instance):
+        context = {
+            'request': self.context.get('request')
+        }
+        return SubscriptionRecipeSerializer(
+            instance=instance.recipe,
+            context=context
+        ).data

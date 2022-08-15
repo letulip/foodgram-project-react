@@ -1,5 +1,6 @@
 from django_filters.rest_framework import (AllValuesMultipleFilter,
-                                           BooleanFilter, ModelMultipleChoiceFilter, FilterSet)
+                                           BooleanFilter, FilterSet,
+                                           ModelMultipleChoiceFilter)
 from rest_framework.filters import SearchFilter
 
 from .models import Recipe, Tag
