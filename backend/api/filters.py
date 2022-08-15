@@ -23,7 +23,7 @@ class RecipesFilter(FilterSet):
     is_in_shop_list = BooleanFilter(method='get_is_in_shop_list')
     is_favorited = BooleanFilter(method='get_is_favorited')
 
-    class Meta():
+    class Meta:
         fields = (
             'author',
             'tags',
@@ -40,4 +40,4 @@ class RecipesFilter(FilterSet):
     def get_is_favorited(self, queryset, name, value):
         if not value:
             return Recipe.objects.all()
-        return queryset.filter(favorites__user=self.request.user)
+        return queryset.filter(Favorite__user=self.request.user)

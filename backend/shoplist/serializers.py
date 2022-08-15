@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer, SlugRelatedField
-from users.serializers import SubscriptionsRecipeSerializer
+from users.serializers import SubscriptionRecipeSerializer
 
 from .models import ShopList
 
@@ -17,7 +17,7 @@ class ShopListSerializer(ModelSerializer):
         read_only=True,
     )
 
-    class Meta():
+    class Meta:
         fields = (
             'user',
             'recipe',
@@ -28,7 +28,7 @@ class ShopListSerializer(ModelSerializer):
         context = {
             'request': self.context.get('request')
         }
-        return SubscriptionsRecipeSerializer(
+        return SubscriptionRecipeSerializer(
             instance=instance.recipe,
             context=context
         ).data

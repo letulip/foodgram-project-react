@@ -12,9 +12,9 @@ from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from .models import Subscriptions, User
+from .models import Subscription, User
 from .pagination import CustomPagination
-from .serializers import (SubscriptionsSerializer, UserSelfSerializer,
+from .serializers import (SubscriptionSerializer, UserSelfSerializer,
                           UsersSerializer)
 
 
@@ -42,10 +42,8 @@ class UsersViewSet(ModelViewSet):
     )
     def get_account_information(self, request):
         user = get_object_or_404(User, username=request.user)
-
-        if request.method == 'GET':
-            serializer = UsersSerializer(user)
-            return Response(serializer.data)
+        serializer = UsersSerializer(user)
+        return Response(serializer.data)
 
     @action(
         methods=['post'],
@@ -117,13 +115,13 @@ class UserKeyDeleteView(APIView):
             return Response(status=HTTP_401_UNAUTHORIZED)
 
 
-class SubscriptionsViewSet(ModelViewSet):
+class SubscriptionViewSet(ModelViewSet):
     """
     Отображение списка подписок пользователя.
     Доступно только авторизованным пользователям.
     """
 
-    serializer_class = SubscriptionsSerializer
+    serializer_class = SubscriptionSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = CustomPagination
 
@@ -137,7 +135,7 @@ class SubscribeViewSet(ModelViewSet):
     Доступно только авторизованным пользователям.
     """
     
-    serializer_class = SubscriptionsSerializer
+    serializer_class = SubscriptionSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = CustomPagination
 
@@ -157,7 +155,7 @@ class SubscribeViewSet(ModelViewSet):
                 },
                 status=HTTP_400_BAD_REQUEST
             )
-        if Subscriptions.objects.filter(
+        if Subscription.objects.filter(
             user=user,
             author_id=author_id
         ).exists():
@@ -167,7 +165,7 @@ class SubscribeViewSet(ModelViewSet):
                 },
                 status=HTTP_400_BAD_REQUEST
             )
-        Subscriptions.objects.create(
+        Subscription.objects.create(
             user=user,
             author_id=author_id
         )
@@ -182,7 +180,7 @@ class SubscribeViewSet(ModelViewSet):
 
     def delete(self, request, *args, **kwargs):
         author_id = self.kwargs.get('author_id')
-        subscribed = Subscriptions.objects.filter(
+        subscribed = Subscription.objects.filter(
             user=request.user,
             author_id=author_id
         )

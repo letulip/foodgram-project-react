@@ -1,16 +1,16 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import (SubscribeViewSet, SubscriptionsViewSet, UserKeyDeleteView,
+from .views import (SubscribeViewSet, SubscriptionViewSet, UserKeyDeleteView,
                     UserKeyView, UsersViewSet)
 
 app_name = 'users'
 
 router = routers.DefaultRouter()
 router.register(
-    r'users/subscriptions',
-    SubscriptionsViewSet,
-    basename='SubscriptionsViewSet'
+    r'users/Subscription',
+    SubscriptionViewSet,
+    basename='SubscriptionViewSet'
 )
 router.register(
     r'users',

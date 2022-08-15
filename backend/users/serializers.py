@@ -3,7 +3,7 @@ from django.core.validators import RegexValidator
 from rest_framework.serializers import (CharField, EmailField, ModelSerializer,
                                         SerializerMethodField)
 
-from .models import Subscriptions, User
+from .models import Subscription, User
 
 
 class UsersSerializer(ModelSerializer):
@@ -11,7 +11,7 @@ class UsersSerializer(ModelSerializer):
     Общий сериализатор пользователей.
     """
 
-    class Meta():
+    class Meta:
         fields = (
             'id',
             'email',
@@ -68,7 +68,7 @@ class UserSelfSerializer(UsersSerializer):
         max_length=150
     )
 
-    class Meta():
+    class Meta:
         fields = (
             'email',
             'id',
@@ -84,18 +84,18 @@ class UserSelfSerializer(UsersSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Subscriptions.objects.filter(
+        return Subscription.objects.filter(
             user=user,
             author=obj.id
         ).exists()
 
 
-class SubscriptionsRecipeSerializer(ModelSerializer):
+class SubscriptionRecipeSerializer(ModelSerializer):
     """
     Сериализатор отображения рецептов в подписках.
     """
 
-    class Meta():
+    class Meta:
         model = Recipe
         fields = (
             'id',
@@ -105,7 +105,7 @@ class SubscriptionsRecipeSerializer(ModelSerializer):
         )
 
 
-class SubscriptionsSerializer(UserSelfSerializer):
+class SubscriptionSerializer(UserSelfSerializer):
     """
     Сериализатор отображения подписок.
     """
@@ -113,7 +113,7 @@ class SubscriptionsSerializer(UserSelfSerializer):
     recipes = SerializerMethodField(read_only=True)
     recipes_count = SerializerMethodField(read_only=True)
 
-    class Meta():
+    class Meta:
         fields = (
             'email',
             'id',
@@ -132,7 +132,7 @@ class SubscriptionsSerializer(UserSelfSerializer):
         recipes_limit = request.query_params.get('recipes_limit')
         if recipes_limit:
             recipes = recipes[:int(recipes_limit)]
-        return SubscriptionsRecipeSerializer(
+        return SubscriptionRecipeSerializer(
             recipes,
             many=True
         ).data

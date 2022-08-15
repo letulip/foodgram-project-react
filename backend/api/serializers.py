@@ -8,7 +8,7 @@ from rest_framework.serializers import (IntegerField, ModelSerializer,
 from shoplist.models import ShopList
 from users.serializers import UserSelfSerializer
 
-from .models import Favorites, Ingredient, IngredsAmount, Recipe, Tag
+from .models import Favorite, Ingredient, IngredientsAmount, Recipe, Tag
 
 
 class TagSerializer(ModelSerializer):
@@ -16,7 +16,7 @@ class TagSerializer(ModelSerializer):
     Сериализатор отображения тегов.
     """
 
-    class Meta():
+    class Meta:
         fields = (
             'name',
             'color',
@@ -36,7 +36,7 @@ class IngredientsSerializer(ModelSerializer):
     Сериализатор отображения ингредиентов.
     """
 
-    class Meta():
+    class Meta:
         fields = (
             'id',
             'name',
@@ -45,7 +45,7 @@ class IngredientsSerializer(ModelSerializer):
         model = Ingredient
 
 
-class IngredsAmountSerializer(ModelSerializer):
+class IngredientsAmountSerializer(ModelSerializer):
     """
     Сериализатор отображения ингредиентов с количеством.
     """
@@ -65,14 +65,14 @@ class IngredsAmountSerializer(ModelSerializer):
         read_only=True,
     )
 
-    class Meta():
+    class Meta:
         fields = (
             'id',
             'name',
             'measurement_unit',
             'amount',
         )
-        model = IngredsAmount
+        model = IngredientsAmount
 
 
 class AddIngredAmountSerializer(ModelSerializer):
@@ -87,12 +87,12 @@ class AddIngredAmountSerializer(ModelSerializer):
         write_only=True,
     )
 
-    class Meta():
+    class Meta:
         fields = (
             'id',
             'amount',
         )
-        model = IngredsAmount
+        model = IngredientsAmount
 
 
 class RecipesSerializer(ModelSerializer):
@@ -116,7 +116,7 @@ class RecipesSerializer(ModelSerializer):
         read_only=True,
     )
 
-    class Meta():
+    class Meta:
         fields = (
             'id',
             'author',
@@ -134,7 +134,7 @@ class RecipesSerializer(ModelSerializer):
     def get_ingredients(self, obj):
         recipe = obj
         queryset = recipe.ingreds_list.all()
-        return IngredsAmountSerializer(
+        return IngredientsAmountSerializer(
             queryset,
             many=True,
         ).data
@@ -151,7 +151,7 @@ class RecipesSerializer(ModelSerializer):
     def get_is_favorited(self, obj):
         user = self.context.get('request').user
         if not user.is_anonymous:
-            return Favorites.objects.filter(
+            return Favorite.objects.filter(
                 user=user,
                 recipe=obj,
             ).exists()
@@ -178,7 +178,7 @@ class RecipeEditSerializer(ModelSerializer):
     )
     cooking_time = IntegerField()
 
-    class Meta():
+    class Meta:
         fields = (
             'id',
             'author',
@@ -194,7 +194,7 @@ class RecipeEditSerializer(ModelSerializer):
     def create_ingreds(self, recipe, ingredients):
         for item in ingredients:
             ingredient = get_object_or_404(Ingredient, id=item['id'])
-            IngredsAmount.objects.create(
+            IngredientsAmount.objects.create(
                 ingredient=ingredient,
                 recipe=recipe,
                 amount=item['amount']
@@ -221,7 +221,7 @@ class RecipeEditSerializer(ModelSerializer):
 
     @atomic
     def update(self, recipe, validated_data):
-        IngredsAmount.objects.filter(recipe=recipe).delete()
+        IngredientsAmount.objects.filter(recipe=recipe).delete()
         ingredients = validated_data.pop('ingredients')
         self.create_ingreds(recipe, ingredients)
         tags = validated_data.pop('tags')
@@ -234,7 +234,7 @@ class RecipeEditSerializer(ModelSerializer):
         return recipe
 
 
-class FavoritesSerializer(ModelSerializer):
+class FavoriteSerializer(ModelSerializer):
     """
     Сериализатор отображения избранного.
     """
@@ -248,9 +248,9 @@ class FavoritesSerializer(ModelSerializer):
         read_only=True,
     )
 
-    class Meta():
+    class Meta:
         fields = (
             'user',
             'recipe',
         )
-        model = Favorites
+        model = Favorite

@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
+
 from users.models import User
 
 
@@ -86,13 +87,13 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        related_name='ingredients',
-        through='IngredsAmount',
+        related_name='recipes',
+        through='IngredientsAmount',
         verbose_name='Recipe Ingredients',
     )
     tags = models.ManyToManyField(
         Tag,
-        related_name='tags',
+        related_name='recipes',
         verbose_name='Recipe Tag',
     )
     pub_date = models.DateTimeField(
@@ -108,7 +109,7 @@ class Recipe(models.Model):
         return self.name
 
 
-class IngredsAmount(models.Model):
+class IngredientsAmount(models.Model):
     """
     Модель объекта ингредиента с количеством.
     """
@@ -138,7 +139,7 @@ class IngredsAmount(models.Model):
         return full_name
 
 
-class Favorites(models.Model):
+class Favorite(models.Model):
     """
     Модель объекта избранного.
     """
@@ -146,19 +147,19 @@ class Favorites(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='favorites',
+        related_name='Favorite',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='favorites',
+        related_name='Favorite',
     )
     add_date = models.DateTimeField(
         auto_now_add=True,
-        verbose_name='Favorites added date',
+        verbose_name='Favorite added date',
     )
 
-    class Meta():
+    class Meta:
         unique_together = [
             ('user', 'recipe',)
         ]

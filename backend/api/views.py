@@ -8,10 +8,10 @@ from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .filters import IngredsFilter, RecipesFilter
-from .models import Favorites, Ingredient, Recipe, Tag
+from .models import Favorite, Ingredient, Recipe, Tag
 from .pagination import CustomPagination
 from .permissions import IsOwnerOrReadOnly
-from .serializers import (FavoritesSerializer, IngredientsSerializer,
+from .serializers import (FavoriteSerializer, IngredientsSerializer,
                           RecipeEditSerializer, RecipesSerializer,
                           TagSerializer)
 
@@ -57,18 +57,18 @@ class RecipesViewSet(ModelViewSet):
         return RecipeEditSerializer
 
 
-class FavoritesViewSet(ModelViewSet):
+class FavoriteViewSet(ModelViewSet):
     """
     Отображение и редактирование избранных рецептов.
     Доступно только аутентифицированным пользователям.
     """
 
-    serializer_class = FavoritesSerializer
+    serializer_class = FavoriteSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self, *args, **kwargs):
         user = self.request.user
-        return user.favorites.all()
+        return user.Favorite.all()
 
     def create(self, request, *args, **kwargs):
         recipe_id = self.kwargs.get('recipe_id')
@@ -83,7 +83,7 @@ class FavoritesViewSet(ModelViewSet):
             serializer.save(user=request.user, recipe=recipe)
         except IntegrityError:
             message = {
-                'unique_together': 'Recipe already in your favorites',
+                'unique_together': 'Recipe already in your Favorite',
             }
             return Response(
                 data=message,
@@ -99,7 +99,7 @@ class FavoritesViewSet(ModelViewSet):
     def delete(self, request, recipe_id):
         user = request.user
         recipe = get_object_or_404(Recipe, pk=recipe_id)
-        Favorites.objects.filter(
+        Favorite.objects.filter(
             user=user,
             recipe=recipe,
         ).delete()

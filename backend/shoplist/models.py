@@ -25,7 +25,7 @@ class ShopList(models.Model):
         verbose_name='List creation date',
     )
 
-    class Meta():
+    class Meta:
         unique_together = [
             ('user', 'recipe',)
         ]

@@ -1,4 +1,4 @@
-from api.models import IngredsAmount, Recipe
+from api.models import IngredientsAmount, Recipe
 from django.db import IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -28,10 +28,8 @@ class ShopListViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         user = request.user
-        print(user)
         recipe_id = self.kwargs.get('recipe_id')
         recipe = get_object_or_404(Recipe, pk=recipe_id)
-        print(request)
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response(
@@ -39,7 +37,7 @@ class ShopListViewSet(ModelViewSet):
                 status=HTTP_400_BAD_REQUEST
             )
         try:
-            serializer.save(user=request.user, recipe=recipe)
+            serializer.save(user=user, recipe=recipe)
         except IntegrityError:
             message = {
                 'unique_together': 'Recipe already in your shopping list',
@@ -77,7 +75,7 @@ class DownloadShopListView(APIView):
 
     def get(self, request):
         shop_list = {}
-        ingredients = IngredsAmount.objects.filter(
+        ingredients = IngredientsAmount.objects.filter(
             recipe__ingreds_to_buy__user=request.user
         )
         for item in ingredients:

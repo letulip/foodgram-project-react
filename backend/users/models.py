@@ -47,7 +47,7 @@ class User(AbstractUser):
         return self.username
 
 
-class Subscriptions(models.Model):
+class Subscription(models.Model):
     """
     Модель подписок.
     """
@@ -63,7 +63,7 @@ class Subscriptions(models.Model):
         on_delete=models.CASCADE
     )
 
-    class Meta():
+    class Meta:
         unique_together = [
             ('user', 'author',)
         ]

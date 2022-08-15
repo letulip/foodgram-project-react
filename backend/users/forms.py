@@ -8,7 +8,7 @@ class CustomUserCreationForm(UserCreationForm):
     Форма создания нового пользователя.
     """
 
-    class Meta():
+    class Meta:
         model = User
         fields = ('username', 'email',)
 
@@ -18,6 +18,6 @@ class CustomUserChangeForm(UserChangeForm):
     Форма смены пароля пользователя.
     """
 
-    class Meta():
+    class Meta:
         model = User
         fields = ('username', 'email',)
