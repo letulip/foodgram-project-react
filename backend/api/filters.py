@@ -1,9 +1,8 @@
 from django_filters.rest_framework import (AllValuesMultipleFilter,
-                                           BooleanFilter, FilterSet,
-                                           ModelMultipleChoiceFilter)
+                                           BooleanFilter, FilterSet)
 from rest_framework.filters import SearchFilter
 
-from .models import Recipe, Tag
+from .models import Recipe
 
 
 class IngredsFilter(SearchFilter):
@@ -15,11 +14,6 @@ class RecipesFilter(FilterSet):
     Фильтры сортировки рецептов по тегам, избранному и корзине.
     """
 
-    # tags = ModelMultipleChoiceFilter(
-    #     field_name='tags__slug',
-    #     queryset=Tag.objects.all(),
-    #     to_field_name='slug',
-    # )
     tags = AllValuesMultipleFilter(field_name='tags__slug')
     is_in_shop_list = BooleanFilter(method='get_is_in_shop_list')
     is_favorited = BooleanFilter(method='get_is_favorited')
