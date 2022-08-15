@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -155,18 +156,20 @@ class DownloadShopListView(APIView):
         shop_list = {}
         ingredients = IngredientsAmount.objects.filter(
             recipe__ingreds_to_buy__user=request.user
-        )
+        ).values(
+            'ingredient__name', 'ingredient__measurement_unit'
+        ).order_by(
+            'ingredient__name'
+        ).annotate(ingredient_total=Sum('amount'))
         for item in ingredients:
-            amount = item.amount
-            name = item.ingredient.name
-            unit = item.ingredient.measurement_unit
-            if name not in shop_list:
-                shop_list[name] = {
-                    'amount': amount,
-                    'unit': unit,
-                }
-            else:
-                shop_list[name]['amount'] += amount
+            print(item)
+            amount = item['ingredient_total']
+            name = item['ingredient__name']
+            unit = item['ingredient__measurement_unit']
+            shop_list[name] = {
+                'amount': amount,
+                'unit': unit,
+            }
         out_string = 'Ваш список покупок:\n'
         for name, item in shop_list.items():
             out_string += f'- {name}: {item["amount"]} {item["unit"]}\n'

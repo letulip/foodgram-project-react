@@ -134,6 +134,17 @@ class IngredientsAmount(models.Model):
         verbose_name='Amount of ingredients',
     )
 
+    class Meta:
+        constraints = (
+            models.UniqueConstraint(
+                fields=(
+                    'ingredient',
+                    'recipe',
+                ),
+                name='unique ingredient amount',
+            ),
+        )
+
     def __str__(self) -> str:
         full_name = f'{self.ingredient} для рецепта {self.recipe}'
         return full_name
@@ -162,10 +173,10 @@ class Favorite(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=[
+                fields=(
                     'user',
-                    'recipe'
-                ],
+                    'recipe',
+                ),
                 name='unique_recipe_per_user',
             )
         ]
@@ -200,10 +211,10 @@ class ShopList(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=[
+                fields=(
                     'user',
-                    'recipe'
-                ],
+                    'recipe',
+                ),
                 name='unique_recipe_per_user',
             )
         ]
