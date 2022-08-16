@@ -73,14 +73,17 @@ class FavoriteViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         recipe_id = self.kwargs.get('recipe_id')
-        user = request.user
         error_message = 'Recipe already in your favorites'
         serializer = self.get_serializer(data=request.data)
-        return create_response(recipe_id, serializer, user, error_message)
+        return create_response(
+            recipe_id,
+            serializer,
+            request.user,
+            error_message
+        )
 
     def delete(self, request, recipe_id):
-        user = request.user
-        delete_response(recipe_id, user, Favorite)
+        return delete_response(recipe_id, request.user, Favorite)
 
 
 class ShopListViewSet(ModelViewSet):
@@ -98,14 +101,17 @@ class ShopListViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         recipe_id = self.kwargs.get('recipe_id')
-        user = request.user
         error_message = 'Recipe already in your shopping list'
         serializer = self.get_serializer(data=request.data)
-        return create_response(recipe_id, serializer, user, error_message)
+        return create_response(
+            recipe_id,
+            serializer,
+            request.user,
+            error_message
+        )
 
     def delete(self, request, recipe_id):
-        user = request.user
-        delete_response(recipe_id, user, ShopList)
+        return delete_response(recipe_id, request.user, ShopList)
 
 
 class DownloadShopListView(APIView):

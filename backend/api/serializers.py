@@ -203,12 +203,12 @@ class RecipeEditSerializer(ModelSerializer):
         for item in data['ingredients']:
             if item['id'] in ingreds_list:
                 raise ValidationError({
-                    'ingredients': 'Ingredients should be unique'
+                    'ingredients': 'Ingredient should be unique'
                 })
             ingreds_list.append(item['id'])
             if int(item['amount']) <= 0:
                 raise ValidationError({
-                    'amount': 'Ingredients amount should be positive'
+                    'amount': 'Ingredient amount should be positive'
                 })
 
         tags = data['tags']
@@ -230,7 +230,6 @@ class RecipeEditSerializer(ModelSerializer):
             })
         return data
 
-    # use atomic to roll back db transaction due to error
     @atomic
     def create(self, validated_data):
         user = self.context.get('request').user
@@ -251,9 +250,7 @@ class RecipeEditSerializer(ModelSerializer):
         self.create_ingreds(recipe, ingredients)
         tags = validated_data.pop('tags')
         recipe.tags.set(tags)
-        Recipe.objects.filter(id=recipe.id).update(**validated_data)
-        # super().update(**validated_data)
-        return recipe
+        return super().update(recipe, validated_data)
 
 
 class FavoriteSerializer(ModelSerializer):

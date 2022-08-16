@@ -15,7 +15,7 @@ class RecipesFilter(FilterSet):
     """
 
     tags = AllValuesMultipleFilter(field_name='tags__slug')
-    is_in_shop_list = BooleanFilter(method='get_is_in_shop_list')
+    is_in_shopping_cart = BooleanFilter(method='get_is_in_shopping_cart')
     is_favorited = BooleanFilter(method='get_is_favorited')
 
     class Meta:
@@ -23,11 +23,11 @@ class RecipesFilter(FilterSet):
             'author',
             'tags',
             'is_favorited',
-            'is_in_shop_list',
+            'is_in_shopping_cart',
         )
         model = Recipe
 
-    def get_is_in_shop_list(self, queryset, name, value):
+    def get_is_in_shopping_cart(self, queryset, name, value):
         if not value:
             return Recipe.objects.all()
         return queryset.filter(shop_list__user=self.request.user)
