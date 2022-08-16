@@ -113,7 +113,7 @@ class RecipesSerializer(ModelSerializer):
         many=True,
         read_only=True,
     )
-    is_in_shop_list = SerializerMethodField(
+    is_in_shopping_cart = SerializerMethodField(
         read_only=True,
     )
     is_favorited = SerializerMethodField(
@@ -131,11 +131,11 @@ class RecipesSerializer(ModelSerializer):
             'cooking_time',
             'tags',
             'is_favorited',
-            'is_in_shop_list',
+            'is_in_shopping_cart',
         )
         model = Recipe
 
-    def get_is_in_shop_list(self, obj):
+    def get_is_in_shopping_cart(self, obj):
         user = self.context.get('request').user
         if not user.is_anonymous:
             return ShopList.objects.filter(
