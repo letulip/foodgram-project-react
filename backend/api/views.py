@@ -1,12 +1,7 @@
-from django.db import IntegrityError
 from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
-                                   HTTP_400_BAD_REQUEST)
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
@@ -18,25 +13,7 @@ from .permissions import IsOwnerOrReadOnly
 from .serializers import (FavoriteSerializer, IngredientsSerializer,
                           RecipeEditSerializer, RecipesSerializer,
                           ShopListSerializer, TagSerializer)
-
-
-def create_response(recipe_id, serializer, user, error_message):
-    recipe = get_object_or_404(Recipe, pk=recipe_id)
-    serializer.is_valid(raise_exception=True)
-    try:
-        serializer.save(user=user, recipe=recipe)
-    except IntegrityError:
-        message = {
-            'unique_together': error_message,
-        }
-        return Response(
-            data=message,
-            status=HTTP_400_BAD_REQUEST,
-        )
-    return Response(
-        serializer.data,
-        status=HTTP_201_CREATED,
-    )
+from .utils import create_response, delete_response
 
 
 class TagsViewSet(ReadOnlyModelViewSet):
@@ -103,14 +80,7 @@ class FavoriteViewSet(ModelViewSet):
 
     def delete(self, request, recipe_id):
         user = request.user
-        recipe = get_object_or_404(Recipe, pk=recipe_id)
-        Favorite.objects.filter(
-            user=user,
-            recipe=recipe,
-        ).delete()
-        return Response(
-            status=HTTP_204_NO_CONTENT
-        )
+        delete_response(recipe_id, user, Favorite)
 
 
 class ShopListViewSet(ModelViewSet):
@@ -135,14 +105,7 @@ class ShopListViewSet(ModelViewSet):
 
     def delete(self, request, recipe_id):
         user = request.user
-        recipe = get_object_or_404(Recipe, pk=recipe_id)
-        ShopList.objects.filter(
-            user=user,
-            recipe=recipe
-        ).delete()
-        return Response(
-            status=HTTP_204_NO_CONTENT,
-        )
+        delete_response(recipe_id, user, ShopList)
 
 
 class DownloadShopListView(APIView):
@@ -163,7 +126,6 @@ class DownloadShopListView(APIView):
             'ingredient__name'
         ).annotate(ingredient_total=Sum('amount'))
         for item in ingredients:
-            print(item)
             amount = item['ingredient_total']
             name = item['ingredient__name']
             unit = item['ingredient__measurement_unit']

@@ -15,7 +15,7 @@ from rest_framework.viewsets import ModelViewSet
 from .models import Subscription, User
 from .pagination import CustomPagination
 from .serializers import (SubscriptionSerializer, PasswordChangeSerializer,
-                          UserSelfSerializer, UsersSerializer)
+                          UsersSerializer)
 
 
 class UsersViewSet(ModelViewSet):
@@ -53,19 +53,11 @@ class UsersViewSet(ModelViewSet):
     def post(self, request: HttpRequest):
         user = get_object_or_404(User, email=request.user.email)
         data = request.data
-        password_serializer = PasswordChangeSerializer(
-            data=data
-        )
-        password_serializer.is_valid(raise_exception=True)
-        current_password = data['current_password']
+        serializer = PasswordChangeSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        current_password = serializer.validated_data['current_password']
         if user.check_password(current_password):
-            user.set_password(data['new_password'])
-            serializer = UserSelfSerializer(
-                user,
-                data=user.__dict__
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+            user.set_password(serializer.validated_data['new_password'])
             return Response(status=HTTP_204_NO_CONTENT)
         data = {
             'password': 'wrong password',

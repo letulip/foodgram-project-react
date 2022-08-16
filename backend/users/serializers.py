@@ -3,7 +3,6 @@ from rest_framework.serializers import (CharField, EmailField, ModelSerializer,
                                         Serializer, SerializerMethodField)
 
 from api.models import Recipe
-
 from .models import Subscription, User
 
 

@@ -7,7 +7,6 @@ from rest_framework.serializers import (IntegerField, ModelSerializer,
                                         SlugRelatedField, ValidationError)
 
 from users.serializers import SubscriptionRecipeSerializer, UserSelfSerializer
-
 from .models import (Favorite, Ingredient, IngredientsAmount, Recipe, ShopList,
                      Tag)
 
@@ -253,6 +252,7 @@ class RecipeEditSerializer(ModelSerializer):
         tags = validated_data.pop('tags')
         recipe.tags.set(tags)
         Recipe.objects.filter(id=recipe.id).update(**validated_data)
+        # super().update(**validated_data)
         return recipe
 
 
