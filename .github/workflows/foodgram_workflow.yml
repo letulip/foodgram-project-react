@@ -90,7 +90,7 @@ jobs:
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           # Остановка всех контейнеров
           # sudo docker stop $(sudo docker ps -a -q)
-          # sudo docker run --rm -d -p 5000:5000 ${{ secrets.DOCKER_USERNAME }}/foodgram_back:latest
+          sudo docker run --rm -d -p 5000:5000 ${{ secrets.DOCKER_USERNAME }}/foodgram_back:latest
           sudo docker-compose up -d --build
           sudo docker-compose exec -T backend python manage.py makemigrations
           sudo docker-compose exec -T backend python manage.py migrate
