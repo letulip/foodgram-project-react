@@ -14,7 +14,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from .models import Subscription, User
 from .pagination import CustomPagination
-from .serializers import (SubscriptionSerializer, PasswordChangeSerializer,
+from .serializers import (PasswordChangeSerializer, SubscriptionSerializer,
                           UsersSerializer)
 
 
@@ -108,7 +108,7 @@ class UserKeyDeleteView(APIView):
                 "message": "You have successfully logged out.",
             }
             return Response(data, status=HTTP_204_NO_CONTENT)
-        except Exception as e:
+        except Exception:
             return Response(status=HTTP_401_UNAUTHORIZED)
 
 

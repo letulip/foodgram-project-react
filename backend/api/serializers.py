@@ -7,6 +7,7 @@ from rest_framework.serializers import (IntegerField, ModelSerializer,
                                         SlugRelatedField, ValidationError)
 
 from users.serializers import SubscriptionRecipeSerializer, UserSelfSerializer
+
 from .models import (Favorite, Ingredient, IngredientsAmount, Recipe, ShopList,
                      Tag)
 

@@ -19,8 +19,7 @@ class Ingredient(models.Model):
     )
 
     def __str__(self) -> str:
-        full_name = f'{self.name}, {self.measurement_unit}'
-        return full_name
+        return f'{self.name}, {self.measurement_unit}'
 
 
 class Tag(models.Model):
@@ -146,8 +145,7 @@ class IngredientsAmount(models.Model):
         )
 
     def __str__(self) -> str:
-        full_name = f'{self.ingredient} для рецепта {self.recipe}'
-        return full_name
+        return f'{self.ingredient} для рецепта {self.recipe}'
 
 
 class Favorite(models.Model):
@@ -182,8 +180,7 @@ class Favorite(models.Model):
         ]
 
     def __str__(self) -> str:
-        full_name = f'{self.recipe} добавлен в избранное {self.user}'
-        return full_name
+        return f'{self.recipe} добавлен в избранное {self.user}'
 
 
 class ShopList(models.Model):
@@ -220,5 +217,4 @@ class ShopList(models.Model):
         ]
 
     def __str__(self) -> str:
-        full_name = f'{self.user}, {self.recipe}'
-        return full_name
+        return f'{self.user}, {self.recipe}'

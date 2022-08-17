@@ -76,5 +76,4 @@ class Subscription(models.Model):
         ]
 
     def __str__(self) -> str:
-        full_name = f'{self.author} добавлен в подписки {self.user}'
-        return full_name
+        return f'{self.author} добавлен в подписки {self.user}'
