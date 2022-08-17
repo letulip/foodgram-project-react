@@ -84,9 +84,9 @@ jobs:
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-        # Выполняет pull образа с DockerHub
+          # Выполняет pull образа с DockerHub
           sudo docker pull letulip/foodgram_back:latest
-        # Остановка всех контейнеров
+          # Остановка всех контейнеров
           sudo docker stop $(sudo docker ps -a -q)
           # sudo docker run --rm -d -p 5000:5000 letulip/foodgram_back:latest
           sudo docker-compose up -d --build
