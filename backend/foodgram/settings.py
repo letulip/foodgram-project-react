@@ -6,9 +6,9 @@ DJANGO_SETTINGS_MODULE = os.getenv('DJANGO_SETTINGS_MODULE', __file__)
 
 SECRET_KEY = os.getenv('DJANGO_SECRET', '*')
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '158.160.10.38', 'yp.letulip.ru']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
