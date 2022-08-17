@@ -10,10 +10,11 @@ services:
       - ./.env
 
   backend:
-    # image: letulip/foodgram_back:latest
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
+    image: letulip/foodgram_back:latest
+    # build:
+    #   context: ../backend
+    #   dockerfile: Dockerfile
+    build: ./backend/
     restart: always
     volumes:
       - static_value:/app/static/
@@ -23,19 +24,19 @@ services:
     env_file:
     - ./.env
 
-  frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    volumes:
-      - ../frontend/:/app/result_build/
-    depends_on:
-      - backend
-
   # frontend:
-  #   image: letulip/foodgram_front:latest
+  #   build:
+  #     context: ../frontend
+  #     dockerfile: Dockerfile
   #   volumes:
   #     - ../frontend/:/app/result_build/
+  #   depends_on:
+  #     - backend
+
+  frontend:
+    image: letulip/foodgram_front:latest
+    volumes:
+      - ../frontend/:/app/result_build/
   
   nginx:
     image: nginx:1.19.3
