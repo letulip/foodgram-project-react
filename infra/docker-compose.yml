@@ -11,9 +11,6 @@ services:
 
   backend:
     image: letulip/foodgram_back:latest
-    # build:
-    #   context: ../backend
-    #   dockerfile: Dockerfile
     build: ./backend/
     restart: always
     volumes:
@@ -25,11 +22,6 @@ services:
     - ./.env
 
   frontend:
-  #   build:
-  #     context: ../frontend
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ../frontend/:/app/result_build/
     image: letulip/foodgram_front:latest
     volumes:
       - ../frontend/:/app/result_build/
