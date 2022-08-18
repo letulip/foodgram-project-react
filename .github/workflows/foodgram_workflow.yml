@@ -80,7 +80,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           cd infra/
-          # Выполняет pull образа с DockerHub
+          # Выполняет pull образов с DockerHub
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_back:latest
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_front:latest
           sudo docker-compose stop
@@ -96,8 +96,7 @@ jobs:
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           # Остановка всех контейнеров
-          # sudo docker stop $(sudo docker ps -a -q)
-          # sudo docker run --rm -d -p 5000:5000 ${{ secrets.DOCKER_USERNAME }}/foodgram_back:latest
+          sudo docker stop $(sudo docker ps -a -q)
           sudo docker-compose up -d --build
           sudo docker-compose exec -T backend python manage.py makemigrations
           sudo docker-compose exec -T backend python manage.py migrate

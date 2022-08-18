@@ -134,4 +134,4 @@ dmypy.json
 
 # static
 backend/media/
-backend/static/
+# backend/static/
