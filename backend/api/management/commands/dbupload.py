@@ -15,13 +15,25 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         file = json.load(open('../../data/ingredients.json'))
-        count = 1
+        count = 0
 
         for row in file:
             Ingredient.objects.create(
                 id=count,
                 name=row['name'],
                 measurement_unit=row['measurement_unit'],
+            )
+            count += 1
+
+        file_tags = json.load(open('../../data/tags.json'))
+        count = 0
+
+        for row in file_tags:
+            Ingredient.objects.create(
+                id=count,
+                name=row['name'],
+                color=row['color'],
+                slug=row['slug'],
             )
             count += 1
 
