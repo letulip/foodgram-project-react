@@ -2,7 +2,7 @@ import json
 
 from django.core.management.base import BaseCommand
 
-from api.models import Ingredient
+from api.models import Ingredient, Tag
 
 
 class Command(BaseCommand):
@@ -14,7 +14,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        file = json.load(open('../../data/ingredients.json'))
+        # file = json.load(open('/app/static/data/ingredients.json'))
+        file = json.load(open('static/data/ingredients.json'))
         count = 0
 
         for row in file:
@@ -25,11 +26,12 @@ class Command(BaseCommand):
             )
             count += 1
 
-        file_tags = json.load(open('../../data/tags.json'))
+        # file_tags = json.load(open('/app/static/data/tags.json'))
+        file_tags = json.load(open('static/data/tags.json'))
         count = 0
 
         for row in file_tags:
-            Ingredient.objects.create(
+            Tag.objects.create(
                 id=count,
                 name=row['name'],
                 color=row['color'],
