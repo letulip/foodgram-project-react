@@ -96,7 +96,6 @@ class ShopListViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        print('we are here')
         user = self.request.user
         return user.shop_list.all()
 

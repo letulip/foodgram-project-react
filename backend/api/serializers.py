@@ -6,7 +6,7 @@ from rest_framework.serializers import (IntegerField, ModelSerializer,
                                         SerializerMethodField,
                                         SlugRelatedField, ValidationError)
 
-from users.serializers import SubscriptionRecipeSerializer, UserSelfSerializer
+from users.serializers import SubscriptionRecipeSerializer, UsersSerializer
 
 from .models import (Favorite, Ingredient, IngredientsAmount, Recipe, ShopList,
                      Tag)
@@ -102,7 +102,7 @@ class RecipesSerializer(ModelSerializer):
     Сериализатор отображения рецепта.
     """
 
-    author = UserSelfSerializer(
+    author = UsersSerializer(
         read_only=True,
     )
     ingredients = IngredientsAmountSerializer(
@@ -163,7 +163,7 @@ class RecipeEditSerializer(ModelSerializer):
     image = Base64ImageField(
         use_url=True,
     )
-    author = UserSelfSerializer(
+    author = UsersSerializer(
         read_only=True,
     )
     ingredients = AddIngredAmountSerializer(

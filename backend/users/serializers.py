@@ -1,5 +1,4 @@
-from django.core.validators import RegexValidator
-from rest_framework.serializers import (CharField, EmailField, ModelSerializer,
+from rest_framework.serializers import (CharField, ModelSerializer,
                                         Serializer, SerializerMethodField)
 
 from api.models import Recipe
@@ -12,6 +11,10 @@ class UsersSerializer(ModelSerializer):
     Общий сериализатор пользователей.
     """
 
+    is_subscribed = SerializerMethodField(
+        read_only=True,
+    )
+    
     class Meta:
         fields = (
             'id',
@@ -19,6 +22,7 @@ class UsersSerializer(ModelSerializer):
             'username',
             'first_name',
             'last_name',
+            'is_subscribed',
             'password'
         )
         model = User
@@ -35,59 +39,6 @@ class UsersSerializer(ModelSerializer):
         user.save()
         return user
 
-
-class PasswordChangeSerializer(Serializer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['new_password'] = CharField(required=True)
-        self.fields['current_password'] = CharField(required=True)
-
-
-class UserSelfSerializer(UsersSerializer):
-    """
-    Сериализатор просмотра личной страницы пользователя.
-    """
-
-    is_subscribed = SerializerMethodField(
-        read_only=True,
-    )
-    username = CharField(
-        max_length=150,
-        required=False,
-        validators=[
-            RegexValidator(
-                regex=r'^[\w.@+-]+$',
-                message="""This value may contain only letters,
-                digits and @/./+/-/_ characters."""
-            ),
-            RegexValidator(
-                regex=r'^\b(m|M)e\b',
-                inverse_match=True,
-                message="""Username Me registration not allowed."""
-            )
-        ],
-    )
-    email = EmailField(
-        required=False,
-        max_length=254
-    )
-    password = CharField(
-        required=False,
-        max_length=150
-    )
-
-    class Meta:
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
-            'password'
-        )
-        model = User
-
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
         if user.is_anonymous:
@@ -96,6 +47,13 @@ class UserSelfSerializer(UsersSerializer):
             user=user,
             author=obj.id
         ).exists()
+
+
+class PasswordChangeSerializer(Serializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['new_password'] = CharField(required=True)
+        self.fields['current_password'] = CharField(required=True)
 
 
 class SubscriptionRecipeSerializer(ModelSerializer):
@@ -113,7 +71,7 @@ class SubscriptionRecipeSerializer(ModelSerializer):
         )
 
 
-class SubscriptionSerializer(UserSelfSerializer):
+class SubscriptionSerializer(UsersSerializer):
     """
     Сериализатор отображения подписок.
     """

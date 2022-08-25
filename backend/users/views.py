@@ -42,7 +42,7 @@ class UsersViewSet(ModelViewSet):
     )
     def get_account_information(self, request):
         user = get_object_or_404(User, username=request.user)
-        serializer = UsersSerializer(user)
+        serializer = self.get_serializer(user)
         return Response(serializer.data)
 
     @action(
