@@ -14,7 +14,7 @@ class UsersSerializer(ModelSerializer):
     is_subscribed = SerializerMethodField(
         read_only=True,
     )
-    
+
     class Meta:
         fields = (
             'id',
